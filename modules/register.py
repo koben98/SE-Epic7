@@ -52,7 +52,7 @@ def verify_username(username, database="database.json"):
         return True
 
 
-def verify_register(username, password, first_name, last_name, database="database.json"):
+def verify_register(username, password, first_name, last_name, tier, database="database.json"):
     # validate both password and username
     is_secure_password = verify_password(password)
     is_unique_username = verify_username(username, database)
@@ -71,6 +71,7 @@ def verify_register(username, password, first_name, last_name, database="databas
                 "password": password,
                 "first_name": first_name,
                 "last_name": last_name,
+                "plus_tier": True if tier == 2 else False,
                 "posted_jobs": [],
                 "applied_jobs": [],
                 "saved_jobs": [],
@@ -112,6 +113,7 @@ def register(database="database.json"):
         username = input("Please enter a username: ")
         password = input(
             "Please enter a password. Passwords must contain a minimum of 8 characters, maximum 12, one capital letter, one digit and one non-alpha character: ")
+        tier = input("Enter 1 for Free Standard Tier. 2 for $10/mo Plus Tier")
         is_registered = verify_register(
-            username, password, first_name, last_name)
+            username, password, first_name, last_name, tier)
     return True

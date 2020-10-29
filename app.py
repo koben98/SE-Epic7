@@ -16,6 +16,8 @@ from modules.profile_view import *
 from modules.friend_search import *
 from modules.jobs2 import *
 from modules.del_show_jobs import *
+from modules.messaging import *
+
 
 def get_user_option(limit1, limit2):
     while True:
@@ -71,10 +73,10 @@ if __name__ == "__main__":
 
     while True:
         print_welcome2()
-        option = get_user_option(1, 11)
-        while option < 1 or option > 11:
+        option = get_user_option(1, 12)
+        while option < 1 or option > 12:
             print("Invalid input. Try again")
-            option = get_user_option(1, 11)
+            option = get_user_option(1, 12)
 
         if option == 1:  # Post Job
             print("Posting Job")
@@ -126,13 +128,13 @@ if __name__ == "__main__":
                 while user_choice < 1 or user_choice > 5:
                     print("Invalid input. Try again")
                     user_choice = get_user_option(1, 5)
-                if user_choice == 1: # Delete a job
+                if user_choice == 1:  # Delete a job
                     deleted = delete_job()
-                elif user_choice == 2: # View saved jobs
+                elif user_choice == 2:  # View saved jobs
                     edit_saved = edit_saved_jobs()
-                elif user_choice == 3: # View applied jobs
+                elif user_choice == 3:  # View applied jobs
                     printApplied = print_applied_jobs()
-                elif user_choice == 4: # View jobs not applied for
+                elif user_choice == 4:  # View jobs not applied for
                     notApplied = print_not_applied()
                 else:
                     break
@@ -238,5 +240,17 @@ if __name__ == "__main__":
                     else:
                         print("Going back to the main menu.")
                         break
-        elif option == 11:  # Logout
+        elif option == 11:
+            friends = print_friends(LOGGED_IN_USER["username"])
+            choice = int(input(
+                f"Please enter the ID number of the friend you want to message ({1}-{len(friends)}). Enter 0 to go back to main menu: "))
+            while choice < 0 or choice > len(friends):
+                print("Invalid Input. Try again")
+                choice = int(input(
+                    f"Please enter the ID number of the friend you want to message ({1}-{len(friends)}). Enter 0 to go back to main menu: "))
+            if choice == 0:
+                continue
+            message = input("Enter the message you want to send: ")
+            sucess = send_message(friends[choice-1], message)
+        elif option == 12:  # Logout
             exit()

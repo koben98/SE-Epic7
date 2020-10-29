@@ -551,3 +551,36 @@ def test_del_job():
         else:
             break
 
+def test_get_all_jobs():
+    user_object={"username": "Star", "password": "Star123!", "first_name": "Star", "last_name": "Jones",posted_jobs=[{
+    "job_id": "11111111-14a4-11eb-9bec-ed7ef134cb3d", "title": "Singer", "description": "Singing as a second voice with the band called Blue", "employer": "Blue", "location": "London", "salary": "111,111"
+    },
+    {
+        "job_id": "22222222-14a4-11eb-9bec-ed7ef134cb3d", "title": "Dj",
+        "description": "Perform in a night club as an EDM Dj", "employer": "Ybor Club", "location": "Tampa",
+        "salary": "55,555"
+    }]}
+    with open("test_database.json", 'w+') as db:
+        init_db = {
+            "users": []
+        }
+        users.append(user_object)
+        json.dump(init_db, db)
+        db.close()
+    with open("test_database.json", "r") as db:
+        list=get_all_jobs('test_database.json')
+        assert list["job_id"]="11111111-14a4-11eb-9bec-ed7ef134cb3d" return True
+        assert list["jod_id"]="22222222-14a4-11eb-9bec-ed7ef134cb3d" return True
+
+
+def test_save_job():
+    with open('test_database.json, 'r+') as db:
+        data = json.load(db)
+        for user in data["users"]:
+            if user["username"] == LOGGED_IN_USER["username"]:
+
+                job_saved={"job_id": "22222222-14a4-11eb-9bec-ed7ef134cb3d", "title": "Dj",
+                "description": "Perform in a night club as an EDM Dj", "employer": "Ybor Club", "location": "Tampa",
+                "salary": "55,555"}
+                save_job(job_saved)
+                assert user["saved_jobs"]="22222222-14a4-11eb-9bec-ed7ef134cb3d"

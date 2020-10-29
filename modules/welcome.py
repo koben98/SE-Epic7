@@ -59,10 +59,12 @@ def print_welcome2():
     8.) Personal Profile
     9.) Add a friend
     10.) Show my network
-    11.) Logout and Exit
+    11.) Send a message
+    12.) Logout and Exit
     """
 
     print(welcome)
+
 
 def print_manage_jobs():
     manage = """

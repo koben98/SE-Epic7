@@ -71,7 +71,7 @@ def verify_register(username, password, first_name, last_name, tier, database="d
                 "password": password,
                 "first_name": first_name,
                 "last_name": last_name,
-                "plus_tier": True if tier == 2 else False,
+                "plus_tier": True if tier == 2 or tier == True else False,
                 "posted_jobs": [],
                 "applied_jobs": [],
                 "saved_jobs": [],

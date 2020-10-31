@@ -7,6 +7,7 @@ import json
 
 print("Starting test")
 
+
 def test_user_option():
     option = get_user_option(1, 3)
     assert isinstance(option, int)
@@ -46,20 +47,20 @@ with open("test_database.json", 'w+') as db:
 def test_login_and_register():
     valid_fake_users = [
         {"username": "newUser46", "password": "tahirMon@1",
-            "first_name": "John", "last_name": "Cena"},
+            "first_name": "John", "last_name": "Cena", "plus_tier": True},
         {"username": "newUser47", "password": "hoanGngu@12",
-            "first_name": "The", "last_name": "Rock"},
+            "first_name": "The", "last_name": "Rock", "plus_tier": False},
         {"username": "newUser48",
-            "password": "joRgo(76", "first_name": "Elon", "last_name": "Musk"},
+            "password": "joRgo(76", "first_name": "Elon", "last_name": "Musk", "plus_tier": False},
         {"username": "newUser49", "password": "newUser4@",
-            "first_name": "Steve", "last_name": "Jobs"},
+            "first_name": "Steve", "last_name": "Jobs", "plus_tier": True},
         {"username": "newUser50", "password": "newUser4$",
-            "first_name": "Bill", "last_name": "Gates"},
+            "first_name": "Bill", "last_name": "Gates", "plus_tier": True},
     ]
 
     for user in valid_fake_users:
         assert verify_register(user["username"], user["password"], user["first_name"],
-                               user["last_name"], database="test_database.json") == True
+                               user["last_name"], user["plus_tier"], database="test_database.json") == True
         assert login(user["username"], user["password"],
                      database="test_database.json") == True  # verify_login
 
@@ -75,11 +76,11 @@ def test_login_and_register():
 
     for i in range(4):
         assert verify_register(valid_fake_users[i]["username"], valid_fake_users[i]["password"], valid_fake_users[i]
-                               ["first_name"], valid_fake_users[i]["last_name"], database="test_database.json") == False
+                               ["first_name"], valid_fake_users[i]["last_name"], valid_fake_users[i]["plus_tier"], database="test_database.json") == False
 
     # Insert the user that was deleted so it is full again
     assert verify_register(valid_fake_users[4]["username"], valid_fake_users[4]["password"], valid_fake_users[4]
-                           ["first_name"], valid_fake_users[4]["last_name"], database="test_database.json") == True
+                           ["first_name"], valid_fake_users[4]["last_name"], valid_fake_users[i]["plus_tier"], database="test_database.json") == True
 
 
 def test_skills_options():
@@ -107,16 +108,21 @@ def test_post_job():
         ["Developer", "Develop new state of the art software at our company!",
             "Apple", "San Francisco, CA", "hudred thousand dollars"],
         ["Professor", "None", "USF", "Tampa, FL", 80000],
+        ["", "", "", "", ""],
+        ["Mover", "Help clients move to new house",
+            "Bulls Moving Co.", "Tampa, FL", 10],
+        ["Developer", "Develop new state of the art software at our company!",
+            "Apple", "San Francisco, CA", "hudred thousand dollars"],
+        ["Professor", "None", "USF", "Tampa, FL", 80000],
     ]
+
     new_job = ["Janitor", "Clean the mess of the future generation of engineers",
                "USF", "Tampa, FL", "25 dollars an hours"]
 
     invalid_fake_jobs = [
-        [None, "Help clients move to new house",
-            "Bulls Moving Co.", "Tampa, Fl", 10],
+        [None, "Help clients move to new house", "Bulls Moving Co.", None, 10],
         ["Professor", None, "USF", "Tampa, Fl", 80000],
-        [None, "Clean the mess of the future generation of engineers",
-            "USF", "Tampa, FL", None],
+        [None, "Clean the mess of the future generation of engineers", "USF", "Tampa, FL", None],
     ]
 
     # Test invalid jobs
@@ -134,12 +140,12 @@ def test_post_job():
         login(user["username"], user["password"],
               database="test_database.json")
 
-        if i == 4:  # Test limit of 4 jobs
+        if i == 10:  # Test limit of 10 jobs
             assert post_job(new_job[0], new_job[1], new_job[2], new_job[3],
                             new_job[4], database="test_database.json") == [False, 404]
         else:  # Test valid jobs
             assert post_job(valid_fake_jobs[i][0], valid_fake_jobs[i][1], valid_fake_jobs[i][2],
-                            valid_fake_jobs[i][3], valid_fake_jobs[i][4], database="test_database.json") == [True, 200]
+                                valid_fake_jobs[i][3], valid_fake_jobs[i][4], database="test_database.json") == [True, 200]
         i += 1
 
 
@@ -263,9 +269,9 @@ def test_privacy_policy():
         json.dump(init_db, db)
         db.close()
     fake_user = {"username": "newUser46", "password": "tahirMon@1",
-                 "first_name": "John", "last_name": "Cena"}
+                 "first_name": "John", "last_name": "Cena", "plus_tier": False}
     assert verify_register(fake_user["username"], fake_user["password"],
-                           fake_user["first_name"], fake_user["last_name"], "test_database.json") == True
+                           fake_user["first_name"], fake_user["last_name"], fake_user["plus_tier"], "test_database.json") == True
     LOGGED_IN_USER
     assert login(fake_user["username"],
                  fake_user["password"], "test_database.json") == True
@@ -333,9 +339,9 @@ def test_creating_profile():
         ]
     }
     fake_user = {"username": "newUser46", "password": "tahirMon@1",
-                 "first_name": "John", "last_name": "Cena"}
+                 "first_name": "John", "last_name": "Cena", "plus_tier": True}
     assert verify_register(fake_user["username"], fake_user["password"],
-                           fake_user["first_name"], fake_user["last_name"], "test_database.json") == True
+                           fake_user["first_name"], fake_user["last_name"], fake_user["plus_tier"], "test_database.json") == True
     LOGGED_IN_USER
     assert login(fake_user["username"],
                  fake_user["password"], "test_database.json") == True
@@ -356,6 +362,7 @@ def test_creating_profile():
                 # Verify experience is more than 3
                 experience_length = len(user["posted_title"]["experience"])
                 assert experience_length >= 0 and experience_length <= 3
+
 
 def test_profile_view():
     with open("test_database.json", 'w+') as db:
@@ -411,17 +418,17 @@ def test_profile_view():
         ]
     }
     fake_user = {"username": "alexm", "password": "Alex123!",
-                 "first_name": "Alex", "last_name": "Miller"}
+                 "first_name": "Alex", "last_name": "Miller", "plus_tier": True}
     fake_friend = {"username": "ayman", "password": "Ayman123!",
-                 "first_name": "Ayman", "last_name": "Nagi"}
+                   "first_name": "Ayman", "last_name": "Nagi", "plus_tier": True}
     assert verify_register(fake_user["username"], fake_user["password"],
-                           fake_user["first_name"], fake_user["last_name"], "test_database.json") == True
+                           fake_user["first_name"], fake_user["last_name"], fake_user["plus_tier"], "test_database.json") == True
 
     display_user(fake_user["username"])
 
     friend_option()
 
-    options = get_user_option(1,2)
+    options = get_user_option(1, 2)
     if options == 1:
         print("No friends listed")
     if options == 2:
@@ -436,9 +443,9 @@ def test_friend_list():
         json.dump(init_db, db)
         db.close()
     fake_user = {"username": "alexm", "password": "Alex123!",
-                 "first_name": "Alex", "last_name": "Miller"}
+                 "first_name": "Alex", "last_name": "Miller", "plus_tier": False}
     assert verify_register(fake_user["username"], fake_user["password"],
-                           fake_user["first_name"], fake_user["last_name"], "test_database.json") == True
+                           fake_user["first_name"], fake_user["last_name"], fake_user["plus_tier"], "test_database.json") == True
     str = ""
     print("You have already connected with:")
     with open('test_database.json') as db:
@@ -448,9 +455,11 @@ def test_friend_list():
                 str = LOGGED_IN_USER["username"]
                 print('\n'.join(user["friends"]), )
 
-            yes_no = prompt("Would you like to disconnect from any of your friends?(y/n): ")
+            yes_no = prompt(
+                "Would you like to disconnect from any of your friends?(y/n): ")
             if yes_no:
-                deleted_friend = input("Enter the name of the friend you want to delete from the list above: ")
+                deleted_friend = input(
+                    "Enter the name of the friend you want to delete from the list above: ")
                 if deleted_friend in user["friends"]:
                     user["friends"].remove(deleted_friend)
                     print(deleted_friend, "was deleted")
@@ -467,9 +476,11 @@ def test_friend_list():
             else:
                 break
 
+
 def test_friend_search():
     username = input("Please enter a username (type in 'alexm' for test): ")
-    password = input("Please enter a password (type in 'Alexm123!' for test) : ")
+    password = input(
+        "Please enter a password (type in 'Alexm123!' for test) : ")
     logged_in = login(username, password)
 
     friend = str(
@@ -518,12 +529,13 @@ def test_del_job():
             "users": []
         }
         json.dump(init_db, db)
-        data = json.load(db)
+        #data = json.load(db)
         db.close()
+
     fake_user = {"username": "alexm", "password": "Alex123!",
-                 "first_name": "Alex", "last_name": "Miller"}
+                 "first_name": "Alex", "last_name": "Miller", "plus_tier": True}
     assert verify_register(fake_user["username"], fake_user["password"],
-                           fake_user["first_name"], fake_user["last_name"], "test_database.json") == True
+                           fake_user["first_name"], fake_user["last_name"], fake_user["plus_tier"], "test_database.json") == True
     logged_in = login("alexm", "Alexm123!")
     while True:
         time.sleep(1)
@@ -551,6 +563,8 @@ def test_del_job():
         else:
             break
 
+
+"""
 def test_get_all_jobs():
     user_object={"username": "Star", "password": "Star123!", "first_name": "Star", "last_name": "Jones",posted_jobs=[{
     "job_id": "11111111-14a4-11eb-9bec-ed7ef134cb3d", "title": "Singer", "description": "Singing as a second voice with the band called Blue", "employer": "Blue", "location": "London", "salary": "111,111"
@@ -572,7 +586,6 @@ def test_get_all_jobs():
         assert list["job_id"]="11111111-14a4-11eb-9bec-ed7ef134cb3d" return True
         assert list["jod_id"]="22222222-14a4-11eb-9bec-ed7ef134cb3d" return True
 
-
 def test_save_job():
     with open('test_database.json, 'r+') as db:
         data = json.load(db)
@@ -584,3 +597,67 @@ def test_save_job():
                 "salary": "55,555"}
                 save_job(job_saved)
                 assert user["saved_jobs"]="22222222-14a4-11eb-9bec-ed7ef134cb3d"
+"""
+
+#Epic 7 
+def test_print_friends():
+    # Clear DB
+    with open("test_database.json", 'w+') as db:
+        init_db = {
+            "users": []
+        }
+        json.dump(init_db, db)
+        db.close()
+
+    valid_fake_users = [
+        {"username": "newUser46", "password": "tahirMon@1",
+            "first_name": "John", "last_name": "Cena", "plus_tier": False, "friends": ["newUser47", "newUser48", "newUser49", "newUser50"]},
+        
+        {"username": "newUser47", "password": "hoanGngu@12",
+            "first_name": "The", "last_name": "Rock", "plus_tier": False, "friends": ["newUser46", "newUser48", "newUser49"]},
+        
+        {"username": "newUser48",
+            "password": "joRgo(76", "first_name": "Elon", "last_name": "Musk", "plus_tier": True, "friends": ["newUser50"]},
+        
+        {"username": "newUser49", "password": "newUser4@",
+            "first_name": "Steve", "last_name": "Jobs", "plus_tier": True, "friends": ["newUser46", "newUser47", "newUser48", "newUser50", ]},
+        
+        {"username": "newUser50", "password": "newUser4$",
+            "first_name": "Bill", "last_name": "Gates", "plus_tier": False, "friends": ["newUser47", "newUser48"]},
+    ]    
+
+    # Insert valid fake users with already listed friends
+    with open("test_database.json") as db:
+        data = json.load(db)
+    with open("test_database.json", 'w+') as db:
+        for user in valid_fake_users:
+            data["users"].append(user)
+        json.dump(data, db)
+        db.close()
+
+    # Test the print_friends function on valid_fake users
+    for VFuser in valid_fake_users:
+        logging = login(VFuser["username"], VFuser["password"], database="test_database.json") # Login each user for it to work
+        assert print_friends(LOGGED_IN_USER["username"], database="test_database.json") == VFuser["friends"] # lists should be equal
+
+
+def test_send_message():
+    with open("test_database.json") as db:
+        data = json.load(db)
+
+        default_recipient = "newUser46" # The user that everyone will send a message to 
+        default_message = "Hello!"
+        
+        for user in data["users"]:
+            if user["username"] == default_recipient: # Don't send message to self
+                continue
+            
+            logging = login(user["username"], user["password"], database="test_database.json")
+            
+            if default_recipient in user["friends"]: # If they are friends they can send messages regardless of tier
+                assert send_message(default_recipient, default_message, database="test_database.json") == True
+            elif user["plus_tier"] == True: # "Plus" members can send messages regardless of if they are friends or not
+                assert send_message(default_recipient, default_message, database="test_database.json") == True
+            else: # Not friends and user is not a "plus" member
+                assert send_message(default_recipient, default_message, database="test_database.json") == False
+        db.close()

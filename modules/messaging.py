@@ -12,7 +12,6 @@ def print_friends(username, database="database.json"):
                     print(f"ID {index + 1}.): {friend} ")
                 return user["friends"]
 
-
 def send_message(username, message, database="database.json"):
     with open(database) as db:
         data = json.load(db)
@@ -21,6 +20,8 @@ def send_message(username, message, database="database.json"):
         found_friend = False
         for user in data["users"]:
             if user["username"] == LOGGED_IN_USER["username"]:
+                if user["plus_tier"] == True:
+                    found_friend = True
                 for friend in user["friends"]:
                     if friend == username:
                         found_friend = True
@@ -31,7 +32,7 @@ def send_message(username, message, database="database.json"):
                         user["inbox"] = []
 
                     user["inbox"].append({
-                        "From": username,
+                        "From": LOGGED_IN_USER["username"],
                         "Message": message,
                         "isNew": True,
                     })

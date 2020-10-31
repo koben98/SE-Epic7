@@ -17,6 +17,7 @@ from modules.friend_search import *
 from modules.jobs2 import *
 from modules.del_show_jobs import *
 from modules.messaging import *
+from modules.inbox import *
 
 
 def get_user_option(limit1, limit2):
@@ -47,6 +48,7 @@ if __name__ == "__main__":
             if logged_in:
                 # Show pending friend requests and allow user to accept or decline them
                 has_requests = show_requests()
+                has_inbox()
                 break
             else:
                 continue
@@ -73,10 +75,10 @@ if __name__ == "__main__":
 
     while True:
         print_welcome2()
-        option = get_user_option(1, 12)
-        while option < 1 or option > 12:
+        option = get_user_option(1, 13)
+        while option < 1 or option > 13:
             print("Invalid input. Try again")
-            option = get_user_option(1, 12)
+            option = get_user_option(1, 13)
 
         if option == 1:  # Post Job
             print("Posting Job")
@@ -252,5 +254,7 @@ if __name__ == "__main__":
                 continue
             message = input("Enter the message you want to send: ")
             sucess = send_message(friends[choice-1], message)
-        elif option == 12:  # Logout
+        elif option == 12:
+            view_inbox()
+        elif option == 13:  # Logout
             exit()

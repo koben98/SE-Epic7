@@ -484,7 +484,7 @@ def test_friend_search():
     logged_in = login(username, password)
 
     friend = str(
-        input("Search for people you know by last name, university, or thier major (type in last name 'Nagi' for test case): "))
+        input("Search for people you know by last name, university, or their major (type in last name 'Nagi' for test case): "))
     people_found = []
     found_friend = False
 
@@ -611,8 +611,7 @@ def test_print_friends():
 
     valid_fake_users = [
         {"username": "newUser46", "password": "tahirMon@1",
-            "first_name": "John", "last_name": "Cena", "plus_tier": False, "friends": ["newUser47", "newUser48", "newUser49", "newUser50"]},
-        
+            "first_name": "John", "last_name": "Cena", "plus_tier": False, "friends": ["newUser47", "newUser48", "newUser49", "newUser50"], "inbox":[]},
         {"username": "newUser47", "password": "hoanGngu@12",
             "first_name": "The", "last_name": "Rock", "plus_tier": False, "friends": ["newUser46", "newUser48", "newUser49"]},
         
@@ -660,4 +659,61 @@ def test_send_message():
                 assert send_message(default_recipient, default_message, database="test_database.json") == True
             else: # Not friends and user is not a "plus" member
                 assert send_message(default_recipient, default_message, database="test_database.json") == False
+        db.close()
+
+
+def test_has_inbox():
+    # Clear DB
+    with open("test_database.json", 'w+') as db:
+        init_db = {
+            "users": []
+        }
+        json.dump(init_db, db)
+        db.close()
+
+    valid_fake_users = [
+        {"username": "newUser46", "password": "tahirMon@1",
+         "first_name": "John", "last_name": "Cena", "plus_tier": False,
+         "friends": ["newUser47", "newUser48", "newUser49", "newUser50"],
+         "inbox": [{"From": "newUser48", "Message": "Hello!", "isNew": True},
+                   {"From": "newUser49", "Message": "Hello!", "isNew": True}]},
+
+        {"username": "newUser47", "password": "hoanGngu@12",
+         "first_name": "The", "last_name": "Rock", "plus_tier": False,
+         "friends": ["newUser46", "newUser48", "newUser49"],
+         "inbox": [{"From": "newUser48", "Message": "Hello!", "isNew": True},
+                   {"From": "newUser49", "Message": "Hello!", "isNew": True}]},
+
+        {"username": "newUser48",
+         "password": "joRgo(76", "first_name": "Elon", "last_name": "Musk", "plus_tier": True, "friends": ["newUser50"],
+         "inbox": []},
+
+        {"username": "newUser49", "password": "newUser4@",
+         "first_name": "Steve", "last_name": "Jobs", "plus_tier": True,
+         "friends": ["newUser46", "newUser47", "newUser48", "newUser50"], "inbox": []},
+
+        {"username": "newUser50", "password": "newUser4$",
+         "first_name": "Bill", "last_name": "Gates", "plus_tier": False, "friends": ["newUser46", "newUser48"],
+         "inbox": []},
+    ]
+
+    # Insert valid fake users with already listed friends
+    with open("test_database.json") as db:
+        data = json.load(db)
+    with open("test_database.json", 'w+') as db:
+        for user in valid_fake_users:
+            data["users"].append(user)
+        json.dump(data, db)
+        db.close()
+
+    with open("test_database.json") as db:
+        data = json.load(db)
+    with open("test_database.json", 'r') as db:
+        for user in data["users"]:
+            logging = login(user["username"], user["password"], database="test_database.json")
+            if user["username"] == LOGGED_IN_USER["username"]:
+                if user["inbox"] == []:
+                    assert has_inbox(database="test_database.json") == False
+                else:
+                    assert has_inbox(database="test_database.json") == True
         db.close()

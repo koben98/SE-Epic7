@@ -12,12 +12,14 @@ def has_inbox(database="database.json"):
             if user["username"] == LOGGED_IN_USER["username"]:
                 if user["inbox"] == []:
                     print("Nothing in inbox")
+                    return False
                 else:
                     for inbox_messages in user["inbox"]:
                         if inbox_messages["isNew"] == True:
                             print("You have a new message in your inbox!")
                             time.sleep(3)
-                            break
+                            return True
+
 
 def view_inbox(database="database.json"):
     with open(database) as db:
@@ -51,3 +53,5 @@ def view_inbox(database="database.json"):
                                 print("Message deleted. View inbox to see if there are more messages.")
                                 time.sleep(1)
                         continue
+
+

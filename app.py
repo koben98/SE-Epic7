@@ -48,7 +48,7 @@ if __name__ == "__main__":
             if logged_in:
                 # Show pending friend requests and allow user to accept or decline them
                 has_requests = show_requests()
-                has_inbox()
+                answer=has_inbox()
                 break
             else:
                 continue
